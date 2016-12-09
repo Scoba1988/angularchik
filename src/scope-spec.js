@@ -70,7 +70,7 @@ describe('Scope', function() {
             expect(scope.counter).toBe(2);
         });
 
-        xit('calls listener when watch value is first undefined', function() {  
+        it('calls listener when watch value is first undefined', function() {  
             scope.counter = 0;  
 
             scope.$watch(function(scope) { 
@@ -84,14 +84,14 @@ describe('Scope', function() {
             expect(scope.counter).toBe(1);
         }); 
 
-        xit('may have watchers that omit the listener function', function() {  
+        it('may have watchers that omit the listener function', function() {  
             var watchFn = jasmine.createSpy().and.returnValue('something');  
 
             scope.$watch(watchFn);
 
             scope.$digest();
 
-            expect(watchFn).toHaveBeenCalled(); 
+            expect(watchFn).toHaveBeenCalled();
         });
 
         /*
@@ -111,7 +111,7 @@ describe('Scope', function() {
             По-этому, когда вы сталкиваетесь с проблемой производительности в ангулар
             приложениях, первым делом обратите внимание на кол-во вотчей.
         */
-        xit('triggers chained watchers in the same digest', function() {  
+        it('triggers chained watchers in the same digest', function() {
             scope.name = 'Platon';  
 
             scope.$watch(function(scope) { 
@@ -142,16 +142,16 @@ describe('Scope', function() {
         });
 
 
-        /*
-            Исходя их предидущего теста, дайджест может зациклиться когда один, 
-            или несколько вотчей, всегда остаются грязными, т.е. изменяют данные в скоупе.
+        // /*
+        //     Исходя их предидущего теста, дайджест может зациклиться когда один, 
+        //     или несколько вотчей, всегда остаются грязными, т.е. изменяют данные в скоупе.
 
-            Чтобы этого не допустить, ангулар ограничивает максимальное кол-во дайджестов.
-            По умолчанию это 10 дайджест циклов. 
+        //     Чтобы этого не допустить, ангулар ограничивает максимальное кол-во дайджестов.
+        //     По умолчанию это 10 дайджест циклов. 
 
-            При достижении этого лимита нужно выбросить ошибку.
-        */
-        xit('gives up on the watches after 10 iterations', function() {  
+        //     При достижении этого лимита нужно выбросить ошибку.
+        // */
+        it('gives up on the watches after 10 iterations', function() {  
             scope.counterA = 0; 
             scope.counterB = 0;
 
@@ -172,7 +172,7 @@ describe('Scope', function() {
             })).toThrow();
         });
 
-        xit('compares based on value if enabled', function() {
+        it('compares based on value if enabled', function() {
             scope.aValue = [1, 2, 3];
             scope.counter = 0;
 
@@ -193,7 +193,7 @@ describe('Scope', function() {
             expect(scope.counter).toBe(2);
         });
 
-        xit('correctly handles NaNs', function() {
+        it('correctly handles NaNs', function() {
             scope.number = 0 / 0; //NaN
             scope.counter = 0;
 
@@ -212,114 +212,114 @@ describe('Scope', function() {
             expect(scope.counter).toBe(1);
         });
 
-        xit('catches exceptions in watch functions and continues', function() {
-            scope.aValue = 'abc';
-            scope.counter = 0;
+        // xit('catches exceptions in watch functions and continues', function() {
+        //     scope.aValue = 'abc';
+        //     scope.counter = 0;
 
-            scope.$watch(function(scope) {
-                throw 'Error';
-            }, function(newValue, oldValue, scope) {});
+        //     scope.$watch(function(scope) {
+        //         throw 'Error';
+        //     }, function(newValue, oldValue, scope) {});
 
-            scope.$watch(function(scope) {
-                return scope.aValue;
-            }, function(newValue, oldValue, scope) {
-                scope.counter++;
-            });
+        //     scope.$watch(function(scope) {
+        //         return scope.aValue;
+        //     }, function(newValue, oldValue, scope) {
+        //         scope.counter++;
+        //     });
 
-            scope.$digest();
+        //     scope.$digest();
 
-            expect(scope.counter).toBe(1);
-        });
+        //     expect(scope.counter).toBe(1);
+        // });
 
-        xit('catches exceptions in listener functions and continues', function() {
-            scope.aValue = 'abc';
-            scope.counter = 0;
+        // xit('catches exceptions in listener functions and continues', function() {
+        //     scope.aValue = 'abc';
+        //     scope.counter = 0;
 
-            scope.$watch(function(scope) {
-                return scope.aValue;
-            }, function(newValue, oldValue, scope) {
-                throw 'Error';
-            });
+        //     scope.$watch(function(scope) {
+        //         return scope.aValue;
+        //     }, function(newValue, oldValue, scope) {
+        //         throw 'Error';
+        //     });
 
-            scope.$watch(function(scope) {
-                return scope.aValue;
-            }, function(newValue, oldValue, scope) {
-                scope.counter++;
-            });
+        //     scope.$watch(function(scope) {
+        //         return scope.aValue;
+        //     }, function(newValue, oldValue, scope) {
+        //         scope.counter++;
+        //     });
 
-            scope.$digest();
+        //     scope.$digest();
 
-            expect(scope.counter).toBe(1);
-        });
+        //     expect(scope.counter).toBe(1);
+        // });
 
-        /*
-            Метод `$watch` должен возвращать функцию, которая при вызове удаляет вотч.
+        // /*
+        //     Метод `$watch` должен возвращать функцию, которая при вызове удаляет вотч.
 
-            Однако, все не так просто как звучит. 
+        //     Однако, все не так просто как звучит. 
 
-            Давайте представим что мы проходим список вотчей слева на право, 
-            и в момент срабатывания `listenerFn` 3-го вотча мы его удаляем.
+        //     Давайте представим что мы проходим список вотчей слева на право, 
+        //     и в момент срабатывания `listenerFn` 3-го вотча мы его удаляем.
 
-                   ------------------->
+        //            ------------------->
 
-            i=0    i=1    i=2    i=3    i=4
-            +----+ +----+ +----+ +----+ +----+
-            |  1 | |  2 | |  3 | |  4 | |  5 |
-            +----+ +----+ +----+ +----+ +----+
-                            ^
-                            |
+        //     i=0    i=1    i=2    i=3    i=4
+        //     +----+ +----+ +----+ +----+ +----+
+        //     |  1 | |  2 | |  3 | |  4 | |  5 |
+        //     +----+ +----+ +----+ +----+ +----+
+        //                     ^
+        //                     |
 
             
-            Допустим мы используем метод `splice`, чтобы удалить елемент в массиве
-            вотчей. При его срабатывании, 4-й вотч станет на место 3-го, а 5-й -- на место 4-го.
-            Но переменная `i` не поменяет свое значение, таким образом картина будет такой:
+        //     Допустим мы используем метод `splice`, чтобы удалить елемент в массиве
+        //     вотчей. При его срабатывании, 4-й вотч станет на место 3-го, а 5-й -- на место 4-го.
+        //     Но переменная `i` не поменяет свое значение, таким образом картина будет такой:
 
-                   ------------------->
+        //            ------------------->
 
-            i=0    i=1    i=2    i=3
-            +----+ +----+ +----+ +----+
-            |  1 | |  2 | |  4 | |  5 |
-            +----+ +----+ +----+ +----+
-                            ^
-                            |
+        //     i=0    i=1    i=2    i=3
+        //     +----+ +----+ +----+ +----+
+        //     |  1 | |  2 | |  4 | |  5 |
+        //     +----+ +----+ +----+ +----+
+        //                     ^
+        //                     |
 
-            И т.к. мы обработали елемент с индексом 2, мы переходим на следующую итерацию
-            цикла, и `i` будет равна 3, пропуская 4-й вотч. 
-        */
-        xit('allows destroying a $watch with a removal function', function() {
-            scope.aValue = 'abc';
-            scope.counter = 0;
+        //     И т.к. мы обработали елемент с индексом 2, мы переходим на следующую итерацию
+        //     цикла, и `i` будет равна 3, пропуская 4-й вотч. 
+        // */
+        // xit('allows destroying a $watch with a removal function', function() {
+        //     scope.aValue = 'abc';
+        //     scope.counter = 0;
 
-            var destroyWatch = scope.$watch(function(scope) {
-                return scope.aValue;
-            }, function(newValue, oldValue, scope) {
-                scope.counter++;
-            });
+        //     var destroyWatch = scope.$watch(function(scope) {
+        //         return scope.aValue;
+        //     }, function(newValue, oldValue, scope) {
+        //         scope.counter++;
+        //     });
 
-            scope.$digest();
+        //     scope.$digest();
 
-            expect(scope.counter).toBe(1);
+        //     expect(scope.counter).toBe(1);
 
-            scope.aValue = 'def';
+        //     scope.aValue = 'def';
 
-            scope.$digest();
+        //     scope.$digest();
 
-            expect(scope.counter).toBe(2);
+        //     expect(scope.counter).toBe(2);
 
-            scope.aValue = 'ghi';
+        //     scope.aValue = 'ghi';
 
-            destroyWatch();
+        //     destroyWatch();
 
-            scope.$digest();
+        //     scope.$digest();
 
-            expect(scope.counter).toBe(2);
-        });
+        //     expect(scope.counter).toBe(2);
+        // });
 
-        xit('allows destroying a $watch during digest', function() {
-        });
+        // xit('allows destroying a $watch during digest', function() {
+        // });
 
-        xit('allows destroying several $watches during digest', function() {
-        });
+        // xit('allows destroying several $watches during digest', function() {
+        // });
 
         /*
             \*Задание со звездочкой.
@@ -350,8 +350,8 @@ describe('Scope', function() {
             Таким образом мы можем уменьшить кол-во дайджестов в половину.
 
         */
-        xit('optimize $digest circle', function() {
-        });
+        // xit('optimize $digest circle', function() {
+        // });
     });
 
     xdescribe('$eval', function() {
