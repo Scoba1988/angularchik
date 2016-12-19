@@ -212,45 +212,45 @@ describe('Scope', function() {
             expect(scope.counter).toBe(1);
         });
 
-        // xit('catches exceptions in watch functions and continues', function() {
-        //     scope.aValue = 'abc';
-        //     scope.counter = 0;
+        it('catches exceptions in watch functions and continues', function() {
+            scope.aValue = 'abc';
+            scope.counter = 0;
 
-        //     scope.$watch(function(scope) {
-        //         throw 'Error';
-        //     }, function(newValue, oldValue, scope) {});
+            scope.$watch(function(scope) {
+                throw 'Error';
+            }, function(newValue, oldValue, scope) {});
 
-        //     scope.$watch(function(scope) {
-        //         return scope.aValue;
-        //     }, function(newValue, oldValue, scope) {
-        //         scope.counter++;
-        //     });
+            scope.$watch(function(scope) {
+                return scope.aValue;
+            }, function(newValue, oldValue, scope) {
+                scope.counter++;
+            });
 
-        //     scope.$digest();
+            scope.$digest();
 
-        //     expect(scope.counter).toBe(1);
-        // });
+            expect(scope.counter).toBe(1);
+        });
 
-        // xit('catches exceptions in listener functions and continues', function() {
-        //     scope.aValue = 'abc';
-        //     scope.counter = 0;
+        it('catches exceptions in listener functions and continues', function() {
+            scope.aValue = 'abc';
+            scope.counter = 0;
 
-        //     scope.$watch(function(scope) {
-        //         return scope.aValue;
-        //     }, function(newValue, oldValue, scope) {
-        //         throw 'Error';
-        //     });
+            scope.$watch(function(scope) {
+                return scope.aValue;
+            }, function(newValue, oldValue, scope) {
+                throw 'Error';
+            });
 
-        //     scope.$watch(function(scope) {
-        //         return scope.aValue;
-        //     }, function(newValue, oldValue, scope) {
-        //         scope.counter++;
-        //     });
+            scope.$watch(function(scope) {
+                return scope.aValue;
+            }, function(newValue, oldValue, scope) {
+                scope.counter++;
+            });
 
-        //     scope.$digest();
+            scope.$digest();
 
-        //     expect(scope.counter).toBe(1);
-        // });
+            expect(scope.counter).toBe(1);
+        });
 
         // /*
         //     Метод `$watch` должен возвращать функцию, которая при вызове удаляет вотч.
@@ -286,40 +286,42 @@ describe('Scope', function() {
         //     И т.к. мы обработали елемент с индексом 2, мы переходим на следующую итерацию
         //     цикла, и `i` будет равна 3, пропуская 4-й вотч. 
         // */
-        // xit('allows destroying a $watch with a removal function', function() {
-        //     scope.aValue = 'abc';
-        //     scope.counter = 0;
+        it('allows destroying a $watch with a removal function', function() {
+            scope.aValue = 'abc';
+            scope.counter = 0;
 
-        //     var destroyWatch = scope.$watch(function(scope) {
-        //         return scope.aValue;
-        //     }, function(newValue, oldValue, scope) {
-        //         scope.counter++;
-        //     });
+            var destroyWatch = scope.$watch(function(scope) {
+                return scope.aValue;
+            }, function(newValue, oldValue, scope) {
+                scope.counter++;
+            });
 
-        //     scope.$digest();
 
-        //     expect(scope.counter).toBe(1);
 
-        //     scope.aValue = 'def';
+            scope.$digest();
 
-        //     scope.$digest();
+            expect(scope.counter).toBe(1);
 
-        //     expect(scope.counter).toBe(2);
+            scope.aValue = 'def';
 
-        //     scope.aValue = 'ghi';
+            scope.$digest();
 
-        //     destroyWatch();
+            expect(scope.counter).toBe(2);
 
-        //     scope.$digest();
+            scope.aValue = 'ghi';
 
-        //     expect(scope.counter).toBe(2);
-        // });
+            destroyWatch();
 
-        // xit('allows destroying a $watch during digest', function() {
-        // });
+            scope.$digest();
 
-        // xit('allows destroying several $watches during digest', function() {
-        // });
+            expect(scope.counter).toBe(2);
+        });
+
+        it('allows destroying a $watch during digest', function() {
+        });
+
+        it('allows destroying several $watches during digest', function() {
+        });
 
         /*
             \*Задание со звездочкой.
@@ -350,11 +352,11 @@ describe('Scope', function() {
             Таким образом мы можем уменьшить кол-во дайджестов в половину.
 
         */
-        // xit('optimize $digest circle', function() {
-        // });
+        xit('optimize $digest circle', function() {
+        });
     });
 
-    xdescribe('$eval', function() {
+    describe('$eval', function() {
         var scope = null;
 
         beforeEach(function() {
@@ -372,7 +374,7 @@ describe('Scope', function() {
         });
     });
 
-    xdescribe('$apply', function() {
+    describe('$apply', function() {
         var scope = null;
 
         beforeEach(function() {

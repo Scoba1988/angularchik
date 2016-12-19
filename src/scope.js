@@ -1,3 +1,4 @@
+var _ = require('lodash');
 function Scope() {
 	this.$watchers = [];
 }
@@ -5,12 +6,24 @@ function Scope() {
 var initValue = function() {};
 
 Scope.prototype.$watch = function(watchFn, listenerFn, valueEqual) {
-	this.$watchers.push({
+	var watcher = {
 		watchFn: watchFn,
 		listenerFn: listenerFn,
 		oldValue: initValue,
-		valueEqual: valueEqual
-	});
+		valueEqual: !!valueEqual
+	}
+
+	this.$watchers.push(watcher);
+
+	var currentScope = this;
+
+	return function() {
+		var index = currentScope.$watchers.indexOf(watcher);
+		
+		if(index >= 0) {
+			currentScope.$watchers.splice(index, 1);
+		}
+	}
 };
 
 Scope.prototype.$digest = function() {
@@ -19,40 +32,55 @@ Scope.prototype.$digest = function() {
 
 	do {
 		dirty = false;
-		for (var i = 0; i < this.$watchers.length; i++) {
 
-			var _watcher = this.$watchers[i];
+		for (var i = this.$watchers.length - 1; i >= 0; i--) {
+			try {
 
-			var newValue = _watcher.watchFn(this); 
-			var oldValue = _watcher.oldValue;
+				var _watcher = this.$watchers[i];
 
-			if (_watcher.valueEqual ? !areEquel(newValue, oldValue) : newValue !== oldValue) {
-				dirty = true;
+				var newValue = _watcher.watchFn(this);
+				var oldValue = _watcher.oldValue;
 
-				_watcher.oldValue = _watcher.valueEqual ? clone(newValue) : newValue;
+				if (!areEqual(newValue, oldValue, _watcher.valueEqual)) {
+					dirty = true;
 
-				if (_watcher.listenerFn) {
-					_watcher.listenerFn(newValue, oldValue, this);
+					_watcher.oldValue = _watcher.valueEqual ? _.cloneDeep(newValue) : newValue;
+
+					if (_watcher.listenerFn) {
+						_watcher.listenerFn(newValue, oldValue, this);
+					}
 				}
+			} catch (err) {
+				console.error(err);
 			}
 		}
 		if(dirty && !(ttl--)) {
-			throw Error('dsf')
+			throw Error('0 digest iterations reached')
 		}
 
 	} while (dirty);
 };
 
-function clone(arr) {
-	return arr.slice();
+Scope.prototype.$eval = function(expr, locals) {
+	return expr(this, locals);
 }
 
-function areEquel(a, b) {
-	if (typeof a === typeof b) {
-		return (a.length === b.length);
+Scope.prototype.$apply = function(expr) {
+	try {
+		this.$eval(expr);
 	}
+	finally {
+		this.$digest();
+	}
+}
 
-	return false;
+function areEqual(newValue, oldValue, valueEqual) {
+	if (valueEqual) {
+		return _.isEqual(newValue, oldValue);
+	} else {
+		return newValue === oldValue || 
+			(typeof newValue === 'number' && typeof oldValue === 'number' && isNaN(newValue) && isNaN(oldValue));
+	}
 }
 
 module.exports = Scope;
